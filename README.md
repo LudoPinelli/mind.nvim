@@ -2,6 +2,10 @@ This is a fork from the archived [phaazon/mind.nvim](https:github.com/phaazon/mi
 
 I updated it, added a couple of features, but I don't plan to add more of them at the moment, just to keep it alive. But of course, feel free to make PR for the features you want.
 
+- **Add**: `MindToggleMain` command
+- **Add**: `ui.position` option, to allow the tree to pop on the right
+- **update**: Replaced deprecated code + clean-up
+
 ---
 
 <h1 align="center">mind.nvim</h1>
