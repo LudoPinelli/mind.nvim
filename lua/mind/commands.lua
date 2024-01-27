@@ -2,12 +2,12 @@
 
 local M = {}
 
-local mind_data = require'mind.data'
-local mind_indexing = require'mind.indexing'
-local mind_keymap = require'mind.keymap'
-local mind_node = require'mind.node'
-local mind_ui = require'mind.ui'
-local notify = require'mind.notify'.notify
+local mind_data = require("mind.data")
+local mind_indexing = require("mind.indexing")
+local mind_keymap = require("mind.keymap")
+local mind_node = require("mind.node")
+local mind_ui = require("mind.ui")
+local notify = require("mind.notify").notify
 
 M.commands = {
   toggle_node = function(args)
@@ -24,23 +24,48 @@ M.commands = {
   end,
 
   add_above = function(args)
-    M.create_node_cursor(args.get_tree(), mind_node.MoveDir.ABOVE, args.save_tree, args.opts)
+    M.create_node_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.ABOVE,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   add_below = function(args)
-    M.create_node_cursor(args.get_tree(), mind_node.MoveDir.BELOW, args.save_tree, args.opts)
+    M.create_node_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.BELOW,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   add_inside_start = function(args)
-    M.create_node_cursor(args.get_tree(), mind_node.MoveDir.INSIDE_START, args.save_tree, args.opts)
+    M.create_node_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.INSIDE_START,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   add_inside_end = function(args)
-    M.create_node_cursor(args.get_tree(), mind_node.MoveDir.INSIDE_END, args.save_tree, args.opts)
+    M.create_node_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.INSIDE_END,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   add_inside_end_index = function(args)
-    M.create_node_index(args.get_tree(), mind_node.MoveDir.INSIDE_END, args.save_tree, args.opts)
+    M.create_node_index(
+      args.get_tree(),
+      mind_node.MoveDir.INSIDE_END,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   delete = function(args)
@@ -97,19 +122,39 @@ M.commands = {
   end,
 
   move_above = function(args)
-    M.move_node_selected_cursor(args.get_tree(), mind_node.MoveDir.ABOVE, args.save_tree, args.opts)
+    M.move_node_selected_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.ABOVE,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   move_below = function(args)
-    M.move_node_selected_cursor(args.get_tree(), mind_node.MoveDir.BELOW, args.save_tree, args.opts)
+    M.move_node_selected_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.BELOW,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   move_inside_start = function(args)
-    M.move_node_selected_cursor(args.get_tree(), mind_node.MoveDir.INSIDE_START, args.save_tree, args.opts)
+    M.move_node_selected_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.INSIDE_START,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   move_inside_end = function(args)
-    M.move_node_selected_cursor(args.get_tree(), mind_node.MoveDir.INSIDE_END, args.save_tree, args.opts)
+    M.move_node_selected_cursor(
+      args.get_tree(),
+      mind_node.MoveDir.INSIDE_END,
+      args.save_tree,
+      args.opts
+    )
   end,
 }
 
@@ -136,7 +181,7 @@ M.open_data = function(tree, node, directory, save_tree, opts)
       should_expand
     )
 
-    if (data == nil) then
+    if data == nil then
       return
     end
 
@@ -150,9 +195,9 @@ M.open_data = function(tree, node, directory, save_tree, opts)
   local winnr
   for _, tabpage_winnr in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     local bufnr = vim.api.nvim_win_get_buf(tabpage_winnr)
-    local buftype = vim.api.nvim_buf_get_option(bufnr, 'buftype')
+    local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
 
-    if buftype == '' then
+    if buftype == "" then
       winnr = tabpage_winnr
       break
     end
@@ -160,23 +205,23 @@ M.open_data = function(tree, node, directory, save_tree, opts)
 
   -- pick the first window in the list; if it’s empty, we open a new one
   if winnr == nil then
-    vim.api.nvim_exec('rightb vsp ' .. data, false)
+    vim.api.nvim_exec2("rightb vsp " .. data, { output = false })
   else
     vim.api.nvim_set_current_win(winnr)
-    vim.api.nvim_exec('e ' .. data, false)
+    vim.api.nvim_exec2("e " .. data, { output = false })
   end
 
-    if opts.ui.close_on_file_open == true then
-        M.close()
-    end
+  if opts.ui.close_on_file_open == true then
+    M.close()
+  end
 end
 
 -- Delete the data file associated with a node.
 --
 -- If it doesn’t exist, does nothing.
 M.delete_data = function(tree, node, save_tree, opts)
-  if (node.data == nil) then
-    notify('no files associated to this node', vim.log.levels.ERROR)
+  if node.data == nil then
+    notify("no files associated to this node", vim.log.levels.ERROR)
     return
   else
     mind_ui.with_confirmation("Delete file?", function()
@@ -196,8 +241,8 @@ end
 M.open_data_line = function(tree, line, directory, save_tree, opts)
   local node = mind_node.get_node_by_line(tree, line)
 
-  if (node == nil) then
-    notify('cannot open data; no node', vim.log.levels.ERROR)
+  if node == nil then
+    notify("cannot open data; no node", vim.log.levels.ERROR)
     return
   end
 
@@ -217,8 +262,8 @@ end
 M.delete_data_line = function(tree, line, save_tree, opts)
   local node = mind_node.get_node_by_line(tree, line)
 
-  if (node == nil) then
-    notify('cannot delete data; no node', vim.log.levels.ERROR)
+  if node == nil then
+    notify("cannot delete data; no node", vim.log.levels.ERROR)
     return
   end
 
@@ -236,10 +281,12 @@ end
 M.open_data_index = function(tree, directory, save_tree, opts)
   mind_indexing.search_index(
     tree,
-    'Open data / URL',
+    "Open data / URL",
     -- filter function
     function(node)
-      return opts.tree.automatic_data_creation or node.data ~= nil or node.url ~= nil
+      return opts.tree.automatic_data_creation
+        or node.data ~= nil
+        or node.url ~= nil
     end,
     -- sink function
     function(item)
@@ -259,8 +306,11 @@ M.copy_node_link = function(node, reg, opts)
   local link = node.data or node.url
 
   if link ~= nil then
-    notify('link was copied')
-    vim.fn.setreg(reg or '"', string.format(opts.edit.copy_link_format or '%s', link))
+    notify("link was copied")
+    vim.fn.setreg(
+      reg or '"',
+      string.format(opts.edit.copy_link_format or "%s", link)
+    )
   end
 end
 
@@ -281,7 +331,7 @@ end
 M.copy_node_link_index = function(tree, reg, opts)
   mind_indexing.search_index(
     tree,
-    'Get a node link',
+    "Get a node link",
     -- filter function
     function(node)
       return node.data ~= nil or node.url ~= nil
@@ -299,11 +349,11 @@ end
 -- For this to work, the node must not have any data associated with it.
 M.make_url_node = function(tree, node, save_tree, opts)
   if node.data ~= nil then
-    notify('cannot create URL node: data present', vim.log.levels.ERROR)
+    notify("cannot create URL node: data present", vim.log.levels.ERROR)
     return
   end
 
-  mind_ui.with_input('URL: ', 'https://', function(input)
+  mind_ui.with_input("URL: ", "https://", function(input)
     node.url = input
     save_tree()
     mind_ui.rerender(tree, opts)
@@ -325,20 +375,20 @@ end
 
 -- Add a node as child of another node.
 M.create_node = function(tree, grand_parent, parent, node, dir, opts)
-  if (dir == mind_node.MoveDir.INSIDE_START) then
+  if dir == mind_node.MoveDir.INSIDE_START then
     mind_node.insert_node(parent, 1, node)
-  elseif (dir == mind_node.MoveDir.INSIDE_END) then
+  elseif dir == mind_node.MoveDir.INSIDE_END then
     mind_node.insert_node(parent, -1, node)
-  elseif (grand_parent ~= nil) then
+  elseif grand_parent ~= nil then
     local index = mind_node.find_parent_index(grand_parent, parent)
 
-    if (dir == mind_node.MoveDir.ABOVE) then
+    if dir == mind_node.MoveDir.ABOVE then
       mind_node.insert_node(grand_parent, index, node)
-    elseif (dir == mind_node.MoveDir.BELOW) then
+    elseif dir == mind_node.MoveDir.BELOW then
       mind_node.insert_node(grand_parent, index + 1, node)
     end
   else
-    notify('forbidden node creation', vim.log.levels.WARN)
+    notify("forbidden node creation", vim.log.levels.WARN)
     return
   end
 
@@ -349,8 +399,8 @@ end
 M.create_node_line = function(tree, line, name, dir, save_tree, opts)
   local grand_parent, parent = mind_node.get_node_and_parent_by_line(tree, line)
 
-  if (parent == nil) then
-    notify('cannot create node on current line; no node', vim.log.levels.ERROR)
+  if parent == nil then
+    notify("cannot create node on current line; no node", vim.log.levels.ERROR)
     return
   end
 
@@ -363,7 +413,7 @@ end
 -- Ask the user for input and the node in the tree at the given direction.
 M.create_node_cursor = function(tree, dir, save_tree, opts)
   mind_ui.with_cursor(function(line)
-    mind_ui.with_input('Node name: ', nil, function(input)
+    mind_ui.with_input("Node name: ", nil, function(input)
       M.create_node_line(tree, line, input, dir, save_tree, opts)
     end)
   end)
@@ -373,12 +423,12 @@ end
 M.create_node_index = function(tree, dir, save_tree, opts)
   mind_indexing.search_index(
     tree,
-    'Pick a node to create a new node in',
+    "Pick a node to create a new node in",
     -- filter function
     nil,
     -- sink function
     function(item)
-      mind_ui.with_input('Node name: ', nil, function(input)
+      mind_ui.with_input("Node name: ", nil, function(input)
         local node = mind_node.new_node(input)
         M.create_node(tree, item.parent, item.node, node, dir, opts)
         save_tree()
@@ -392,23 +442,26 @@ end
 M.delete_node_line = function(tree, line, save_tree, opts)
   local parent, node = mind_node.get_node_and_parent_by_line(tree, line)
 
-  if (node == nil) then
-    notify('no node to delete', vim.log.levels.ERROR)
+  if node == nil then
+    notify("no node to delete", vim.log.levels.ERROR)
     return
   end
 
-  if (parent == nil) then
-    notify('cannot delete a node without parent', vim.log.levels.ERROR)
+  if parent == nil then
+    notify("cannot delete a node without parent", vim.log.levels.ERROR)
     return
   end
 
   local index = mind_node.find_parent_index(parent, node)
 
-  mind_ui.with_confirmation(string.format("Delete '%s'?", node.contents[1].text), function()
-    mind_node.delete_node(parent, index)
-    mind_ui.rerender(tree, opts)
-    save_tree()
-  end)
+  mind_ui.with_confirmation(
+    string.format("Delete '%s'?", node.contents[1].text),
+    function()
+      mind_node.delete_node(parent, index)
+      mind_ui.rerender(tree, opts)
+      save_tree()
+    end
+  )
 end
 
 -- Delete the node under the cursor.
@@ -420,7 +473,7 @@ end
 
 -- Rename a node.
 M.rename_node = function(tree, node, save_tree, opts)
-  mind_ui.with_input('Rename node: ', node.contents[1].text, function(input)
+  mind_ui.with_input("Rename node: ", node.contents[1].text, function(input)
     node.contents[1].text = input
     M.unselect_node()
     mind_ui.rerender(tree, opts)
@@ -443,8 +496,8 @@ end
 
 -- Change the icon of a node.
 M.change_icon = function(tree, node, save_tree, opts)
-  mind_ui.with_input('Change icon: ', node.icon, function(input)
-    if input == ' ' then
+  mind_ui.with_input("Change icon: ", node.icon, function(input)
+    if input == " " then
       input = nil
     end
 
@@ -469,25 +522,21 @@ end
 
 -- Change the icon of a node by selecting through the list of preset icons.
 M.change_icon_menu = function(tree, node, save_tree, opts)
-  local prompt = string.format('Pick an icon for %s', node.contents[1].text)
+  local prompt = string.format("Pick an icon for %s", node.contents[1].text)
   local format_item = function(item)
-    return string.format('%s: %s', item[1], item[2])
+    return string.format("%s: %s", item[1], item[2])
   end
 
-  vim.ui.select(
-    opts.ui.icon_preset,
-    {
-      prompt = prompt,
-      format_item = format_item
-    },
-    function(item)
-      if item ~= nil then
-        node.icon = item[1]
-        save_tree()
-        mind_ui.rerender(tree, opts)
-      end
+  vim.ui.select(opts.ui.icon_preset, {
+    prompt = prompt,
+    format_item = format_item,
+  }, function(item)
+    if item ~= nil then
+      node.icon = item[1]
+      save_tree()
+      mind_ui.rerender(tree, opts)
     end
-  )
+  end)
 end
 
 -- Change the icon of the node at a given line through the list of preset icons.
@@ -523,10 +572,10 @@ end
 
 -- Select a node by path.
 M.select_node_path = function(tree, opts)
-  mind_ui.with_input('Path: /', nil, function(input)
+  mind_ui.with_input("Path: /", nil, function(input)
     local parent, node = mind_node.get_node_by_path(
       tree,
-      '/' .. input,
+      "/" .. input,
       opts.tree.automatic_creation
     )
 
@@ -538,7 +587,7 @@ end
 
 -- Unselect any selected node in the tree.
 M.unselect_node = function()
-  if (M.selected ~= nil) then
+  if M.selected ~= nil then
     M.selected.node.is_selected = nil
     M.selected = nil
 
@@ -552,9 +601,9 @@ end
 -- something, you need to toggle the currently selected node.
 M.toggle_select_node_cursor = function(tree, opts)
   mind_ui.with_cursor(function(line)
-    if (M.selected ~= nil) then
+    if M.selected ~= nil then
       local node = mind_node.get_node_by_line(tree, line)
-      if (node == M.selected.node) then
+      if node == M.selected.node then
         M.unselect_node()
         mind_ui.rerender(tree, opts)
       else
@@ -577,63 +626,63 @@ M.move_node = function(
   dir,
   opts
 )
-  if (source_node == nil) then
-    notify('cannot move; no source node', vim.log.levels.WARN)
+  if source_node == nil then
+    notify("cannot move; no source node", vim.log.levels.WARN)
     return
   end
 
-  if (target_node == nil) then
-    notify('cannot move; no target node', vim.log.levels.WARN)
+  if target_node == nil then
+    notify("cannot move; no target node", vim.log.levels.WARN)
     return
   end
 
   -- if we move in the same tree, we can optimize
-  if (source_parent == target_parent) then
+  if source_parent == target_parent then
     -- compute the index of the nodes to move
     local source_i
     local target_i
     for k, child in ipairs(source_parent.children) do
-      if (child == target_node) then
+      if child == target_node then
         target_i = k
-      elseif (child == source_node) then
+      elseif child == source_node then
         source_i = k
       end
 
-      if (target_i ~= nil and source_i ~= nil) then
+      if target_i ~= nil and source_i ~= nil then
         break
       end
     end
 
-    if (target_i == nil or source_i == nil) then
+    if target_i == nil or source_i == nil then
       -- trying to move inside itsefl; abort
       M.unselect_node()
       mind_ui.rerender(tree, opts)
       return
     end
 
-    if (target_i == source_i) then
+    if target_i == source_i then
       -- same node; aborting
-      notify('not moving; source and target are the same node')
+      notify("not moving; source and target are the same node")
       M.unselect_node()
       mind_ui.rerender(tree, opts)
       return
     end
 
-    if (dir == mind_node.MoveDir.BELOW) then
+    if dir == mind_node.MoveDir.BELOW then
       mind_node.move_source_target_same_tree(
         source_parent,
         source_i,
         target_i + 1
       )
-    elseif (dir == mind_node.MoveDir.ABOVE) then
+    elseif dir == mind_node.MoveDir.ABOVE then
       mind_node.move_source_target_same_tree(source_parent, source_i, target_i)
     else
       -- we move inside, so first remove the node
       mind_node.delete_node(source_parent, source_i)
 
-      if (dir == mind_node.MoveDir.INSIDE_START) then
+      if dir == mind_node.MoveDir.INSIDE_START then
         mind_node.insert_node(target_node, 1, source_node)
-      elseif (dir == mind_node.MoveDir.INSIDE_END) then
+      elseif dir == mind_node.MoveDir.INSIDE_END then
         mind_node.insert_node(target_node, -1, source_node)
       end
     end
@@ -645,13 +694,13 @@ M.move_node = function(
     -- then insert the previously deleted node in the new tree
     local target_i = mind_node.find_parent_index(target_parent, target_node)
 
-    if (dir == mind_node.MoveDir.BELOW) then
+    if dir == mind_node.MoveDir.BELOW then
       mind_node.insert_node(target_parent, target_i + 1, source_node)
-    elseif (dir == mind_node.MoveDir.ABOVE) then
+    elseif dir == mind_node.MoveDir.ABOVE then
       mind_node.insert_node(target_parent, target_i, source_node)
-    elseif (dir == mind_node.MoveDir.INSIDE_START) then
+    elseif dir == mind_node.MoveDir.INSIDE_START then
       mind_node.insert_node(target_node, 1, source_node)
-    elseif (dir == mind_node.MoveDir.INSIDE_END) then
+    elseif dir == mind_node.MoveDir.INSIDE_END then
       mind_node.insert_node(target_node, -1, source_node)
     end
   end
@@ -662,8 +711,8 @@ end
 
 -- Move a selected node into a node at the given line.
 M.move_node_selected_line = function(tree, line, dir, save_tree, opts)
-  if (M.selected == nil) then
-    notify('cannot move; no selected node', vim.log.levels.ERROR)
+  if M.selected == nil then
+    notify("cannot move; no selected node", vim.log.levels.ERROR)
     M.unselect_node()
     mind_ui.rerender(tree, opts)
     return
@@ -671,22 +720,14 @@ M.move_node_selected_line = function(tree, line, dir, save_tree, opts)
 
   local parent, node = mind_node.get_node_and_parent_by_line(tree, line)
 
-  if (parent == nil) then
-    notify('cannot move root', vim.log.levels.ERROR)
+  if parent == nil then
+    notify("cannot move root", vim.log.levels.ERROR)
     M.unselect_node()
     mind_ui.rerender(tree, opts)
     return
   end
 
-  M.move_node(
-    tree,
-    M.selected.parent,
-    M.selected.node,
-    parent,
-    node,
-    dir,
-    opts
-  )
+  M.move_node(tree, M.selected.parent, M.selected.node, parent, node, dir, opts)
 
   save_tree()
 end
@@ -706,7 +747,7 @@ M.toggle_node = function(tree, node, save_tree, opts)
 end
 
 -- Toggle (expand / collapse) a node at a given line.
-M.toggle_node_line = function(tree, line, save_tree,opts)
+M.toggle_node_line = function(tree, line, save_tree, opts)
   local node = mind_node.get_node_by_line(tree, line)
   M.toggle_node(tree, node, save_tree, opts)
 end
@@ -736,16 +777,13 @@ M.open_tree = function(get_tree, data_dir, save_tree, opts)
 
   -- ensure that we close the tree if the window gets closed
   local id
-  id = vim.api.nvim_create_autocmd(
-    { 'WinClosed' },
-    {
-      buffer = bufnr,
-      callback = function()
-        vim.api.nvim_del_autocmd(id)
-        M.close()
-      end
-    }
-  )
+  id = vim.api.nvim_create_autocmd({ "WinClosed" }, {
+    buffer = bufnr,
+    callback = function()
+      vim.api.nvim_del_autocmd(id)
+      M.close()
+    end,
+  })
 
   -- tree
   mind_ui.render(get_tree(), bufnr, opts)
@@ -773,10 +811,10 @@ end
 -- name is a string.
 M.precompute_commands = function()
   for key, c in pairs(mind_keymap.keymaps.normal) do
-    if type(c) == 'string' then
+    if type(c) == "string" then
       local cmd = M.commands[mind_keymap.keymaps.normal[key]]
 
-      if (cmd ~= nil) then
+      if cmd ~= nil then
         mind_keymap.keymaps.normal[key] = cmd
       end
     elseif c == false then
@@ -786,10 +824,10 @@ M.precompute_commands = function()
   end
 
   for key, c in pairs(mind_keymap.keymaps.selection) do
-    if type(c) == 'string' then
+    if type(c) == "string" then
       local cmd = M.commands[mind_keymap.keymaps.selection[key]]
 
-      if (cmd ~= nil) then
+      if cmd ~= nil then
         mind_keymap.keymaps.selection[key] = cmd
       end
     elseif c == false then

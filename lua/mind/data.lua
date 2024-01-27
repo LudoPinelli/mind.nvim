@@ -2,8 +2,8 @@
 
 local M = {}
 
-local notify = require'mind.notify'.notify
-local path = require'plenary.path'
+local notify = require("mind.notify").notify
+local path = require("plenary.path")
 
 -- Create a new random file in a given directory.
 --
@@ -16,20 +16,20 @@ M.new_data_file = function(dir, name, extension, content, should_expand)
   end
 
   -- filter the name
-  name = name:gsub('[^%w-]', ' ') -- remove anything that is not a word or a dash
-  name = name:gsub('%s+', '-') -- replace consecutive spaces with a single one
-  name = name:gsub('-+', '-') -- replace consecutive dashes with a single one
-  name = name:gsub('^-', '') -- remove leading dash
-  name = name:gsub('-$', '') -- remove trailing dash
+  name = name:gsub("[^%w-]", " ") -- remove anything that is not a word or a dash
+  name = name:gsub("%s+", "-") -- replace consecutive spaces with a single one
+  name = name:gsub("-+", "-") -- replace consecutive dashes with a single one
+  name = name:gsub("^-", "") -- remove leading dash
+  name = name:gsub("-$", "") -- remove trailing dash
 
-  local filename = vim.fn.strftime('%Y%m%d%H%M%S-') .. name .. extension
+  local filename = vim.fn.strftime("%Y%m%d%H%M%S-") .. name .. extension
   local p = path:new(dir, filename)
   local file_path = (should_expand and p:expand()) or tostring(p)
 
-  local file = io.open(file_path, 'w')
+  local file = io.open(file_path, "w")
 
-  if (file == nil) then
-    notify('cannot open data file: ' .. file_path)
+  if file == nil then
+    notify("cannot open data file: " .. file_path)
     return nil
   end
 
@@ -43,6 +43,5 @@ end
 M.delete_data_file = function(file_path)
   os.remove(file_path)
 end
-
 
 return M

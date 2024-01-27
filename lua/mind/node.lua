@@ -1,6 +1,6 @@
 -- Node and trees operations.
 
-local notify = require'mind.notify'.notify
+local notify = require("mind.notify").notify
 
 local M = {}
 
@@ -32,10 +32,10 @@ M.MoveDir = {
 M.new_node = function(name, children)
   return {
     contents = {
-      { text = name }
+      { text = name },
     },
     is_expanded = false,
-    children = children
+    children = children,
   }
 end
 
@@ -44,18 +44,18 @@ end
 -- `i` is rank of the node we want to get. If i is 0, then parent and node are returned as result. If not, this function
 -- will recurse into node.children (if any) and if node.is_expanded is true.
 local function get_dfs(parent, node, i)
-  if (i == 0) then
+  if i == 0 then
     return parent, node, i
   end
 
   i = i - 1
 
-  if (node.children ~= nil and node.is_expanded) then
+  if node.children ~= nil and node.is_expanded then
     for _, child in ipairs(node.children) do
       local p, n
       p, n, i = get_dfs(node, child, i)
 
-      if (n ~= nil) then
+      if n ~= nil then
         return p, n, i
       end
     end
@@ -86,13 +86,13 @@ end
 --
 -- The function stops when it arrives at the end of paths, that is, when i == #paths + 1.
 local function get_node_by_path_rec(parent, tree, paths, i, create)
-  if (i == #paths + 1) then
+  if i == #paths + 1 then
     return parent, tree
   end
 
   local segment = paths[i]
 
-  if (tree.children == nil) then
+  if tree.children == nil then
     if create then
       tree.children = { M.new_node(segment) }
     else
@@ -103,7 +103,7 @@ local function get_node_by_path_rec(parent, tree, paths, i, create)
 
   -- look for the child which name is the same as paths[i]
   for _, child in ipairs(tree.children) do
-    if (child.contents[1].text == segment) then
+    if child.contents[1].text == segment then
       return get_node_by_path_rec(tree, child, paths, i + 1, create)
     end
   end
@@ -122,14 +122,14 @@ end
 --
 -- If `create` is set to `true`, nodes are created automatically if they don’t exist.
 M.get_node_by_path = function(tree, path, create)
-  if (path == '/') then
+  if path == "/" then
     return nil, tree
   end
 
-  local split_path = vim.split(path, '/')
+  local split_path = vim.split(path, "/")
 
-  if (split_path[1] ~= '') then
-    notify('path must start with a leading slash (/)', vim.log.levels.WARN)
+  if split_path[1] ~= "" then
+    notify("path must start with a leading slash (/)", vim.log.levels.WARN)
     return
   end
 
@@ -163,8 +163,8 @@ end
 --
 -- If i is negative, it starts after the end.
 M.delete_node = function(tree, i)
-  if (tree.children == nil) then
-    notify('cannot delete node; no children', vim.log.levels.ERROR)
+  if tree.children == nil then
+    notify("cannot delete node; no children", vim.log.levels.ERROR)
     return
   end
 
@@ -176,7 +176,7 @@ M.delete_node = function(tree, i)
     tree.children[k] = tree.children[k + 1]
   end
 
-  if (#tree.children == 0) then
+  if #tree.children == 0 then
     tree.children = nil
   end
 end
@@ -184,7 +184,7 @@ end
 -- Find the parent index of a node in its parent’s children.
 M.find_parent_index = function(tree, node)
   for i, child in ipairs(tree.children) do
-    if (child == node) then
+    if child == node then
       return i
     end
   end
@@ -193,11 +193,11 @@ end
 -- Move a source node at a target node in the same tree.
 M.move_source_target_same_tree = function(tree, src, tgt)
   -- do nothing if src == tgt
-  if (src == tgt) then
+  if src == tgt then
     return
   end
 
-  if (tgt < src) then
+  if tgt < src then
     -- if we want to move src to tgt with target before source
     local prev = tree.children[src]
 

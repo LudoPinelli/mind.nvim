@@ -2,7 +2,7 @@
 
 local M = {}
 
-local notify = require'mind.notify'.notify
+local notify = require("mind.notify").notify
 
 -- Selector for keymap.
 --
@@ -10,8 +10,8 @@ local notify = require'mind.notify'.notify
 -- currently active keymap. The keymap contains user-defined keybindings that will then be resolved when the user
 -- presses their defined keys.
 M.KeymapSelector = {
-  NORMAL = 'normal',
-  SELECTION = 'selection',
+  NORMAL = "normal",
+  SELECTION = "selection",
 }
 
 -- Keymaps.
@@ -64,22 +64,22 @@ M.insert_keymaps = function(bufnr, get_tree, data_dir, save_tree, opts)
     get_tree = get_tree,
     data_dir = data_dir,
     save_tree = save_tree,
-    opts = opts
+    opts = opts,
   }
 
   for key, _ in pairs(keyset) do
-    vim.keymap.set('n', key, function()
+    vim.keymap.set("n", key, function()
       local keymap = M.get_keymap()
 
-      if (keymap == nil) then
-        notify('no active keymap', vim.log.levels.WARN)
+      if keymap == nil then
+        notify("no active keymap", vim.log.levels.WARN)
         return
       end
 
       local cmd = keymap[key]
 
-      if (cmd == nil) then
-        notify('no command bound to ' .. tostring(key), vim.log.levels.WARN)
+      if cmd == nil then
+        notify("no command bound to " .. tostring(key), vim.log.levels.WARN)
         return
       end
 

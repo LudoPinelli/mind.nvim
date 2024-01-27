@@ -1,7 +1,7 @@
 -- Everything relating to the UI.
 local M = {}
 
-local mind_node = require'mind.node'
+local mind_node = require("mind.node")
 
 -- A per-tree render cache.
 --
@@ -14,25 +14,25 @@ M.render_cache = {}
 
 -- Get the highlight group to use for a node given its status.
 local function node_hl(node)
-  if (node.type == mind_node.TreeType.ROOT) then
-    return 'MindNodeRoot'
-  elseif (node.type == mind_node.TreeType.LOCAL_ROOT) then
-    return 'MindNodeRoot'
-  elseif (node.children ~= nil) then
-    return 'MindNodeParent'
+  if node.type == mind_node.TreeType.ROOT then
+    return "MindNodeRoot"
+  elseif node.type == mind_node.TreeType.LOCAL_ROOT then
+    return "MindNodeRoot"
+  elseif node.children ~= nil then
+    return "MindNodeParent"
   else
-    return 'MindNodeLeaf'
+    return "MindNodeLeaf"
   end
 end
 
 -- Compute the text line to display for a given node
 local function node_to_line(node, opts)
-  local name = ''
+  local name = ""
   local partial_hls = {}
 
   local node_group = node_hl(node)
   -- the icon goes first
-  if (node.icon ~= nil) then
+  if node.icon ~= nil then
     name = node.icon
     partial_hls[#partial_hls + 1] = {
       group = node_group,
@@ -46,56 +46,56 @@ local function node_to_line(node, opts)
 
     partial_hls[#partial_hls + 1] = {
       group = node_group,
-      width = #content.text
+      width = #content.text,
     }
   end
 
   -- special case for the first highlight:
-  if (node.type == nil) then
-    if (node.children ~= nil) then
-      partial_hls[#partial_hls - #node.contents + 1].group = 'MindNodeParent'
-    elseif (node.data == nil and node.url == nil) then
-      partial_hls[#partial_hls - #node.contents + 1].group = 'MindModifierEmpty'
+  if node.type == nil then
+    if node.children ~= nil then
+      partial_hls[#partial_hls - #node.contents + 1].group = "MindNodeParent"
+    elseif node.data == nil and node.url == nil then
+      partial_hls[#partial_hls - #node.contents + 1].group = "MindModifierEmpty"
     end
   end
 
   -- special marker for local roots
-  if (node.type == mind_node.TreeType.LOCAL_ROOT) then
-    local marker = ' ' .. opts.ui.local_marker
+  if node.type == mind_node.TreeType.LOCAL_ROOT then
+    local marker = " " .. opts.ui.local_marker
     name = name .. marker
 
     partial_hls[#partial_hls + 1] = {
-      group = 'MindLocalMarker',
+      group = "MindLocalMarker",
       width = #marker,
     }
   end
 
   -- special marker for data / URL nodes
   if node.data ~= nil then
-    local marker = ' ' .. opts.ui.data_marker
+    local marker = " " .. opts.ui.data_marker
     name = name .. marker
 
     partial_hls[#partial_hls + 1] = {
-      group = 'MindDataMarker',
+      group = "MindDataMarker",
       width = #marker,
     }
   elseif node.url ~= nil then
-    local marker = ' ' .. opts.ui.url_marker
+    local marker = " " .. opts.ui.url_marker
     name = name .. marker
 
     partial_hls[#partial_hls + 1] = {
-      group = 'MindURLMarker',
+      group = "MindURLMarker",
       width = #marker,
     }
   end
 
   -- special marker for selection
-  if (node.is_selected) then
-    local marker = ' ' .. opts.ui.select_marker
+  if node.is_selected then
+    local marker = " " .. opts.ui.select_marker
     name = name .. marker
 
     partial_hls[#partial_hls + 1] = {
-      group = 'MindSelectMarker',
+      group = "MindSelectMarker",
       width = #marker,
     }
   end
@@ -114,12 +114,12 @@ local function render_node(node, indent, is_last, lines, hls, opts)
       line = indent
       indent = indent
     else
-      line = indent .. opts.ui.node_indent_marker .. ' '
-      indent = indent .. '  '
+      line = indent .. opts.ui.node_indent_marker .. " "
+      indent = indent .. "  "
     end
   else
-    line = indent .. opts.ui.empty_indent_marker .. ' '
-    indent = indent .. opts.ui.empty_indent_marker .. ' '
+    line = indent .. opts.ui.empty_indent_marker .. " "
+    indent = indent .. opts.ui.empty_indent_marker .. " "
   end
 
   local name, partial_hls = node_to_line(node, opts)
@@ -127,22 +127,22 @@ local function render_node(node, indent, is_last, lines, hls, opts)
   local hl_line = #lines
 
   hls[#hls + 1] = {
-    group = 'MindOpenMarker',
+    group = "MindOpenMarker",
     line = hl_line,
     col_start = 0,
     col_end = #line,
   }
 
-  if (node.children ~= nil) then
-    if (node.is_expanded) then
-      local mark = ' '
+  if node.children ~= nil then
+    if node.is_expanded then
+      local mark = " "
       local hl_col_end = hl_col_start + #mark
 
       hls[#hls + 1] = {
-        group = 'MindOpenMarker',
+        group = "MindOpenMarker",
         line = hl_line,
         col_start = hl_col_start,
-        col_end = hl_col_end
+        col_end = hl_col_end,
       }
 
       lines[#lines + 1] = line .. mark .. name
@@ -155,7 +155,7 @@ local function render_node(node, indent, is_last, lines, hls, opts)
           group = hl.group,
           line = hl_line,
           col_start = hl_col_start,
-          col_end = hl_col_end
+          col_end = hl_col_end,
         }
       end
 
@@ -165,14 +165,14 @@ local function render_node(node, indent, is_last, lines, hls, opts)
       end
       render_node(node.children[#node.children], indent, true, lines, hls, opts)
     else
-      local mark = ' '
+      local mark = " "
       local hl_col_end = hl_col_start + #mark
 
       hls[#hls + 1] = {
-        group = 'MindClosedMarker',
+        group = "MindClosedMarker",
         line = hl_line,
         col_start = hl_col_start,
-        col_end = hl_col_end
+        col_end = hl_col_end,
       }
 
       lines[#lines + 1] = line .. mark .. name
@@ -184,7 +184,7 @@ local function render_node(node, indent, is_last, lines, hls, opts)
           group = hl.group,
           line = hl_line,
           col_start = hl_col_start,
-          col_end = hl_col_end
+          col_end = hl_col_end,
         }
       end
     end
@@ -195,7 +195,12 @@ local function render_node(node, indent, is_last, lines, hls, opts)
     for _, hl in ipairs(partial_hls) do
       hl_col_start = hl_col_end
       hl_col_end = hl_col_start + hl.width
-      hls[#hls + 1] = { group = hl.group, line = hl_line, col_start = hl_col_start, col_end = hl_col_end }
+      hls[#hls + 1] = {
+        group = hl.group,
+        line = hl_line,
+        col_start = hl_col_start,
+        col_end = hl_col_end,
+      }
     end
   end
 end
@@ -204,7 +209,7 @@ end
 local function render_tree(tree, opts)
   local lines = {}
   local hls = {}
-  render_node(tree, '', true, lines, hls, opts)
+  render_node(tree, "", true, lines, hls, opts)
   return lines, hls
 end
 
@@ -282,7 +287,7 @@ end
 -- Ask the user for input with a given prompt and run the tree function on it.
 M.with_input = function(prompt, default, f)
   vim.ui.input({ prompt = prompt, default = default }, function(input)
-    if (input ~= nil) then
+    if input ~= nil then
       f(input)
     end
   end)

@@ -76,54 +76,50 @@ end
 
 -- Open the main tree.
 M.open_main = function()
-  M.wrap_main_tree_fn(
-    function(args)
-      mind_commands.open_tree(
-        args.get_tree,
-        args.opts.persistence.data_dir,
-        function() mind_state.save_main_state(args.opts) end,
-        args.opts
-      )
-    end,
-    M.opts
-  )
+  M.wrap_main_tree_fn(function(args)
+    mind_commands.open_tree(
+      args.get_tree,
+      args.opts.persistence.data_dir,
+      function()
+        mind_state.save_main_state(args.opts)
+      end,
+      args.opts
+    )
+  end, M.opts)
 end
 
 -- Open a project tree.
 --
 -- If `use_global` is set to `true`, will use the global persistence location.
 M.open_project = function(use_global)
-  M.wrap_project_tree_fn(
-    function(args)
-      mind_commands.open_tree(
-        args.get_tree,
-        args.data_dir,
-        use_global
-          and function() mind_state.save_main_state(args.opts) end
-          or function() mind_state.save_local_state() end,
-        args.opts
-      )
-    end,
-    use_global,
-    M.opts
-  )
+  M.wrap_project_tree_fn(function(args)
+    mind_commands.open_tree(
+      args.get_tree,
+      args.data_dir,
+      use_global and function()
+          mind_state.save_main_state(args.opts)
+        end or function()
+          mind_state.save_local_state()
+        end,
+      args.opts
+    )
+  end, use_global, M.opts)
 end
 
 -- Open a smart project tree.
 M.open_smart_project = function()
-  M.wrap_smart_project_tree_fn(
-    function(args, use_global)
-      mind_commands.open_tree(
-        args.get_tree,
-        args.data_dir,
-        use_global
-          and function() mind_state.save_main_state(args.opts) end
-          or function() mind_state.save_local_state() end,
-        args.opts
-      )
-    end,
-    M.opts
-  )
+  M.wrap_smart_project_tree_fn(function(args, use_global)
+    mind_commands.open_tree(
+      args.get_tree,
+      args.data_dir,
+      use_global and function()
+          mind_state.save_main_state(args.opts)
+        end or function()
+          mind_state.save_local_state()
+        end,
+      args.opts
+    )
+  end, M.opts)
 end
 
 -- Load state.
@@ -133,7 +129,7 @@ end
 
 -- Wrap a function call expecting the main tree.
 M.wrap_main_tree_fn = function(f, opts)
-  opts = vim.tbl_deep_extend('force', M.opts, opts or {})
+  opts = vim.tbl_deep_extend("force", M.opts, opts or {})
 
   -- load the main tree
   mind_state.load_main_state(opts)
@@ -141,7 +137,9 @@ M.wrap_main_tree_fn = function(f, opts)
   local args = {
     get_tree = mind_state.get_main_tree,
     data_dir = opts.persistence.data_dir,
-    save_tree = function() mind_state.save_main_state(opts) end,
+    save_tree = function()
+      mind_state.save_main_state(opts)
+    end,
     opts = opts,
   }
 
@@ -152,13 +150,13 @@ end
 --
 -- If the project tree doesn’t exist, it is automatically created.
 M.wrap_project_tree_fn = function(f, use_global, opts)
-  opts = vim.tbl_deep_extend('force', M.opts, opts or {})
+  opts = vim.tbl_deep_extend("force", M.opts, opts or {})
 
   local cwd = vim.fn.getcwd()
   if use_global then
     mind_state.load_main_state(opts)
 
-    if mind_state.state.projects[cwd]== nil then
+    if mind_state.state.projects[cwd] == nil then
       mind_state.new_global_project_tree(cwd, opts)
     end
   else
@@ -170,15 +168,21 @@ M.wrap_project_tree_fn = function(f, use_global, opts)
     end
   end
 
-  local save_tree =
-    use_global and function() mind_state.save_main_state(opts) end
-    or function() mind_state.save_local_state() end
+  local save_tree = use_global
+      and function()
+        mind_state.save_main_state(opts)
+      end
+    or function()
+      mind_state.save_local_state()
+    end
 
   local args = {
-    get_tree = function() return mind_state.get_project_tree(use_global and cwd or nil) end,
+    get_tree = function()
+      return mind_state.get_project_tree(use_global and cwd or nil)
+    end,
     data_dir = mind_state.get_project_data_dir(use_global, opts),
     save_tree = save_tree,
-    opts = opts
+    opts = opts,
   }
 
   f(args)
@@ -188,19 +192,23 @@ end
 --
 -- If a local tree exists, wrap the local tree. Otherwise, wrap a global tree.
 M.wrap_smart_project_tree_fn = function(f, opts)
-  opts = vim.tbl_deep_extend('force', M.opts, opts or {})
+  opts = vim.tbl_deep_extend("force", M.opts, opts or {})
 
   local cwd = vim.fn.getcwd()
-  local p = path:new(cwd, '.mind')
+  local p = path:new(cwd, ".mind")
 
   if p:exists() and p:is_dir() then
     -- load the local state
     mind_state.load_local_state()
 
     local args = {
-      get_tree = function() return mind_state.get_project_tree() end,
+      get_tree = function()
+        return mind_state.get_project_tree()
+      end,
       data_dir = mind_state.get_project_data_dir(false, opts),
-      save_tree = function() mind_state.save_local_state() end,
+      save_tree = function()
+        mind_state.save_local_state()
+      end,
       opts = opts,
     }
 
@@ -214,47 +222,66 @@ M.wrap_smart_project_tree_fn = function(f, opts)
     if tree ~= nil then
       -- a global project tree exists, use that
       local args = {
-        get_tree = function() return mind_state.get_project_tree(cwd) end,
+        get_tree = function()
+          return mind_state.get_project_tree(cwd)
+        end,
         data_dir = mind_state.get_project_data_dir(true, opts),
-        save_tree = function() mind_state.save_main_state(opts) end,
+        save_tree = function()
+          mind_state.save_main_state(opts)
+        end,
         opts = opts,
       }
 
       f(args, true)
     else
       -- prompt the user whether they want a global or local tree
-      mind_ui.with_input('What kind of project tree? (local/global) ', 'local', function(input)
-        local get_tree
-        local save_tree
-        local use_global
+      mind_ui.with_input(
+        "What kind of project tree? (local/global) ",
+        "local",
+        function(input)
+          local get_tree
+          local save_tree
+          local use_global
 
-        if input == 'local' then
-          mind_state.new_local_tree(cwd, opts)
-          get_tree = function() return mind_state.get_project_tree() end
-          save_tree = function() mind_state.save_local_state() end
-          use_global = false
-        elseif input == 'global' then
-          mind_state.new_global_project_tree(cwd, opts)
-          get_tree = function() return mind_state.get_project_tree(cwd) end
-          save_tree = function() mind_state.save_main_state(opts) end
-          use_global = true
+          if input == "local" then
+            mind_state.new_local_tree(cwd, opts)
+            get_tree = function()
+              return mind_state.get_project_tree()
+            end
+            save_tree = function()
+              mind_state.save_local_state()
+            end
+            use_global = false
+          elseif input == "global" then
+            mind_state.new_global_project_tree(cwd, opts)
+            get_tree = function()
+              return mind_state.get_project_tree(cwd)
+            end
+            save_tree = function()
+              mind_state.save_main_state(opts)
+            end
+            use_global = true
+          end
+
+          if get_tree == nil then
+            notify(
+              "unrecognized project tree type, aborting",
+              vim.log.levels.WARN
+            )
+            return
+          end
+
+          local args = {
+            get_tree = get_tree,
+            data_dir = mind_state.get_project_data_dir(use_global, opts),
+            save_tree = save_tree,
+            opts = opts,
+          }
+
+          f(args, true)
+          save_tree()
         end
-
-        if get_tree == nil then
-          notify('unrecognized project tree type, aborting', vim.log.levels.WARN)
-          return
-        end
-
-        local args = {
-          get_tree = get_tree,
-          data_dir = mind_state.get_project_data_dir(use_global, opts),
-          save_tree = save_tree,
-          opts = opts,
-        }
-
-        f(args, true)
-        save_tree()
-      end)
+      )
     end
   end
 end
