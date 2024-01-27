@@ -1,83 +1,59 @@
-local mind_commands = require'mind.commands'
-local mind_highlight = require'mind.highlight'
-local mind_keymap = require'mind.keymap'
-local mind_node = require'mind.node'
-local mind_state = require'mind.state'
-local mind_ui = require'mind.ui'
-local notify = require'mind.notify'.notify
-local path = require'plenary.path'
+local mind_commands = require("mind.commands")
+local mind_highlight = require("mind.highlight")
+local mind_keymap = require("mind.keymap")
+local mind_node = require("mind.node")
+local mind_state = require("mind.state")
+local mind_ui = require("mind.ui")
+local notify = require("mind.notify").notify
+local path = require("plenary.path")
 
 local M = {}
 
 local function toggle_main()
   if mind_ui.render_cache and mind_ui.render_cache.bufnr then
-    require 'mind'.close()
+    require("mind").close()
   else
-    require 'mind'.open_main()
+    require("mind").open_main()
   end
 end
 
 local function create_user_commands()
-  vim.api.nvim_create_user_command(
-    'MindToggleMain',
-    function()
-      toggle_main()
-    end,
-    { desc = 'Toggle the main Mind tree', }
-  )
+  vim.api.nvim_create_user_command("MindToggleMain", function()
+    toggle_main()
+  end, { desc = "Toggle the main Mind tree" })
 
-  vim.api.nvim_create_user_command(
-    'MindOpenMain',
-    function()
-      require'mind'.open_main()
-    end,
-    { desc = 'Open the main Mind tree', }
-  )
+  vim.api.nvim_create_user_command("MindOpenMain", function()
+    require("mind").open_main()
+  end, { desc = "Open the main Mind tree" })
 
-  vim.api.nvim_create_user_command(
-    'MindOpenProject',
-    function(opts)
-      require'mind'.open_project(opts.fargs[1] == 'global')
-    end,
-    {
-      nargs = '?',
-      desc = 'Open the project Mind tree',
-    }
-  )
+  vim.api.nvim_create_user_command("MindOpenProject", function(opts)
+    require("mind").open_project(opts.fargs[1] == "global")
+  end, {
+    nargs = "?",
+    desc = "Open the project Mind tree",
+  })
 
-  vim.api.nvim_create_user_command(
-    'MindOpenSmartProject',
-    function()
-      require'mind'.open_smart_project()
-    end,
-    {
-      desc = 'Open the project Mind tree',
-    }
-  )
+  vim.api.nvim_create_user_command("MindOpenSmartProject", function()
+    require("mind").open_smart_project()
+  end, {
+    desc = "Open the project Mind tree",
+  })
 
-  vim.api.nvim_create_user_command(
-    'MindReloadState',
-    function()
-      require'mind'.reload_state()
-    end,
-    {
-      desc = 'Reload Mind internal state',
-    }
-  )
+  vim.api.nvim_create_user_command("MindReloadState", function()
+    require("mind").reload_state()
+  end, {
+    desc = "Reload Mind internal state",
+  })
 
-  vim.api.nvim_create_user_command(
-    'MindClose',
-    function(opts)
-      require'mind'.close()
-    end,
-    {
-      desc = 'Close main or project Mind tree if open',
-    }
-  )
+  vim.api.nvim_create_user_command("MindClose", function(opts)
+    require("mind").close()
+  end, {
+    desc = "Close main or project Mind tree if open",
+  })
 end
 
 M.setup = function(opts)
-  M.opts = vim.tbl_deep_extend('force', require'mind.defaults', opts or {})
+  M.opts = vim.tbl_deep_extend("force", require("mind.defaults"), opts or {})
 
   -- ensure the paths are expanded
   mind_state.expand_opts_paths(M.opts)

@@ -56,7 +56,12 @@ M.commands = {
   end,
 
   open_data = function(args)
-    M.open_data_cursor(args.get_tree(), args.data_dir, args.save_tree, args.opts)
+    M.open_data_cursor(
+      args.get_tree(),
+      args.data_dir,
+      args.save_tree,
+      args.opts
+    )
   end,
 
   open_data_index = function(args)
@@ -118,10 +123,11 @@ M.open_data = function(tree, node, directory, save_tree, opts)
   end
 
   local data = node.data
-  if (data == nil) then
+  if data == nil then
     local contents = string.format(opts.edit.data_header, node.contents[1].text)
     local should_expand = tree.type ~= mind_node.TreeType.LOCAL_ROOT
 
+    ---@diagnostic disable-next-line: cast-local-type
     data = mind_data.new_data_file(
       directory,
       node.contents[1].text,
