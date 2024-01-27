@@ -735,6 +735,13 @@ Default:~
 Default:~
     `width = 30`
 
+`ui.position`                                            *mind-config-ui.position*
+    If "left", open Mind on the left.
+    If "right", opent Mind on the right.
+
+Default:~
+    position = "left"
+
 `ui.close_on_file_open`                        *mind-config-ui.close_on_file_open*
     If `true` closes the mind window when a file is opened.
 
@@ -793,6 +800,8 @@ Default:~
       { " ", "Monitoring" },
       { " ", "Internet, Earth, everyone!" },
       { " ", "Frozen, on-hold" },
+      { " ", "Data, knowledge" },
+      { " ", "Neovim" },
     }
 
                                                       *mind-config-ui-highlight*

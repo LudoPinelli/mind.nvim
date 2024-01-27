@@ -5,10 +5,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/issues/phaazon/mind.nvim?color=cyan&style=for-the-badge"/>
-  <img src="https://img.shields.io/github/issues-pr/phaazon/mind.nvim?color=green&style=for-the-badge"/>
-  <img src="https://img.shields.io/github/last-commit/phaazon/mind.nvim?style=for-the-badge"/>
-  <img src="https://img.shields.io/github/v/tag/phaazon/mind.nvim?color=pink&label=release&style=for-the-badge"/>
+  <img src="https://img.shields.io/github/issues/LudoPinelli/mind.nvim?color=cyan&style=for-the-badge"/>
+  <img src="https://img.shields.io/github/issues-pr/LudoPinelli/mind.nvim?color=green&style=for-the-badge"/>
+  <img src="https://img.shields.io/github/last-commit/LudoPinelli/mind.nvim?style=for-the-badge"/>
+  <img src="https://img.shields.io/github/v/tag/LudoPinelli/mind.nvim?color=pink&label=release&style=for-the-badge"/>
 </p>
 
 <p align="center">
@@ -107,13 +107,21 @@ Lua dependencies:
 
 ## Installation
 
-This installation guide uses [packer.nvim](https://github.com/wbthomason/packer.nvim) but the procedure should be quite
-similar for other package managers.
-
+With [lazy.nvim](https://github.com/folke/lazy.nvim):
+```lua
+{
+  'phaazon/mind.nvim',
+  dependencies = { 'nvim-lua/plenary.nvim' },
+  lazy = true,
+  config = function()
+    require('packer').use 'phaazon/mind.nvim'
+  end,
+}
+```
+With [packer.nvim](https://github.com/wbthomason/packer.nvim)
 ```lua
 use {
   'phaazon/mind.nvim',
-  branch = 'v2.2',
   requires = { 'nvim-lua/plenary.nvim' },
   config = function()
     require'mind'.setup()
@@ -122,24 +130,6 @@ use {
 ```
 
 This will bring you a default experience. Feel free to customize later the `setup` invocation (`:h mind.setup`).
-
-### Important note about versioning
-
-This plugin implements [SemVer] via git branches and tags. Versions are prefixed with a `v`, and only patch versions
-are git tags. Major and minor versions are git branches. You are **very strongly advised** to use a major version
-dependency to be sure your config will not break when Mind gets updated.
-
-- Major versions always have the form `vM`, where `M` is the major version. — e.g. `v2`.
-- Minor versions always have the form `vM.N`, where `M` is the major version and `N` the minor. — e.g. `v2.0`.
-- Patch versions always have the form `vM.N.P`, where `M` is the major version, `N` the minor and `P` the patch. — e.g.
-  `v2.0.0`.
-
-**It is strongly discouraged to use `master` as that branch can introduce breaking changes at any time.**
-
-### Nightly users
-
-Mind supports nightly releases of Neovim. However, keep in mind that if you are on a nightly version, you must be **on
-the last one**. If you are not, then you are exposed to Neovim compatibility issues / breakage.
 
 # Usage
 
