@@ -1,4 +1,4 @@
-This a fork from the archived [phaazon/mind.nvim](https:github.com/phaazon/mind.nvim).
+This is a fork from the archived [phaazon/mind.nvim](https:github.com/phaazon/mind.nvim).
 
 I updated it, added a couple of features, but I don't plan to add more of them at the moment, just to keep it alive. But of course, feel free to make PR for the features you want.
 
